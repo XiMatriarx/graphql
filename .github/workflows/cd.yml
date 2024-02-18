@@ -1,0 +1,28 @@
+name: Continuous Deployment
+run-name: Continuous Deployment
+on:
+  push:
+    branches:
+      - matrix
+    tags_ignore:
+      - v*
+  pull_request:
+    branches:
+      - matrix
+    tags_ignore:
+      - v*
+concurrency:
+  group: cd
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build
+        run: echo 'Build Mock'
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy
+        run: echo 'Deploy Mock'

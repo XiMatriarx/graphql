@@ -1,0 +1,13 @@
+{
+  "extends": "./.typescriptrc.json",
+  "references": [
+    {
+      "path": "./.typescriptrc.json"
+    }
+  ],
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "compilerOptions": {
+    "rootDir": ".",
+    "types": ["node", "jest"]
+  }
+}
