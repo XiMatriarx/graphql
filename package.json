@@ -1,7 +1,7 @@
 {
   "name": "@ximatriarx/graphql",
   "version": "1.0.0",
-  "description": "GraphQL",
+  "description": "A GraphQL project template",
   "keywords": [
     "Xi",
     "Matriarx",
