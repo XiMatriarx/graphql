@@ -1,0 +1,14 @@
+{
+  "extends": "./.typescriptrc.json",
+  "references": [
+    {
+      "path": "./.typescriptrc.json"
+    }
+  ],
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+  "compilerOptions": {
+    "noEmitOnError": false,
+    "types": ["node", "jest"],
+    "verbatimModuleSyntax": false
+  }
+}

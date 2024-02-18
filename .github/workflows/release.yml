@@ -1,0 +1,104 @@
+name: Release
+run-name: Release
+on:
+  push:
+    tags:
+      - v*
+  pull_request:
+    tags:
+      - v*
+concurrency:
+  group: release
+  cancel-in-progress: true
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript-typescript']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{matrix.language}}
+      - name: Build
+        uses: github/codeql-action/autobuild@v3
+      - name: Analysis
+        uses: github/codeql-action/analyze@v3
+  dependency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dependency
+        run: echo 'Dependency Mock'
+  analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Lint
+        run: npm run lint
+      - name: Test
+        run: npm run test
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Analysis
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          SONAR_TOKEN: ${{secrets.SONARCLOUD}}
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.organization=ximatriarx
+            -Dsonar.projectKey=XiMatriarx_graphql
+            -Dsonar.sources=src
+            -Dsonar.tests=test
+            -Dsonar.javascript.lcov.reportPaths=cache/coverage/lcov.info
+            -Dsonar.verbose=true
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Test
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+  release:
+    needs: [security, dependency, analysis, test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@XiMatriarx'
+          always-auth: true
+      - name: Release
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM}}
