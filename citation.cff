@@ -4,6 +4,6 @@ authors:
   - given-names: 'Xi'
     family-names: 'Matriarx'
 title: 'GraphQL'
-version: 1.0.0
+version: 1.0.1
 date-released: 2024-02-18
 url: 'https://github.com/XiMatriarx/graphql'
